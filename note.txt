@@ -1,0 +1,51 @@
+run
+
+PS F:\qt\OpenXLSX\build> g++ -g F:\qt\readExcel.cpp -o F:\qt\readExcel.exe -LF:/qt/OpenXLSX/build/output -l:libOpenXLSX.a -IF:/qt/OpenXLSX/OpenXLSX/headers
+
+
+
+PS F:\qt> gdb F:\qt\readExcel.exe
+GNU gdb (GDB) 15.2
+Copyright (C) 2024 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+Type "show copying" and "show warranty" for details.
+This GDB was configured as "x86_64-w64-mingw32".
+Type "show configuration" for configuration details.
+For bug reporting instructions, please see:
+<https://www.gnu.org/software/gdb/bugs/>.
+Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+
+For help, type "help".
+Type "apropos word" to search for commands related to "word"...
+Reading symbols from F:\qt\readExcel.exe...
+(gdb) run
+Starting program: F:\qt\readExcel.exe 
+[New Thread 13124.0x3c10]
+[New Thread 13124.0x3a80]
+[New Thread 13124.0x526c]
+Danh s├ích ng╞░ß╗¥i d├╣ng:
+User: id | Email: userName
+terminate called after throwing an instance of 'OpenXLSX::XLValueTypeError'
+  what():  XLCellValue object does not contain the requested type.
+gdb: unknown target exception 0xc0000409 at 0x7fff7ac1286e
+
+Thread 1 received signal ?, Unknown signal.
+0x00007fff7ac1286e in ucrtbase!abort () from C:\WINDOWS\System32\ucrtbase.dll
+(gdb) backtrace
+#0  0x00007fff7ac1286e in ucrtbase!abort () from C:\WINDOWS\System32\ucrtbase.dll
+#1  0x00007fff2960ac9c in ?? () from C:\msys64\ucrt64\bin\libstdc++-6.dll
+#2  0x00007fff295f9626 in ?? () from C:\msys64\ucrt64\bin\libstdc++-6.dll
+#3  0x00007fff297331c3 in ?? () from C:\msys64\ucrt64\bin\libstdc++-6.dll
+#4  0x00007fff29731d36 in ?? () from C:\msys64\ucrt64\bin\libstdc++-6.dll
+#5  0x00007ff7f1000413 in OpenXLSX::XLCellValue::privateGet<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, void> (
+    this=0x5ff980) at F:/qt/OpenXLSX/OpenXLSX/headers/XLCellValue.hpp:331
+#6  0x00007ff7f1000894 in OpenXLSX::XLCellValue::get<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, void> (
+    this=0x5ff980) at F:/qt/OpenXLSX/OpenXLSX/headers/XLCellValue.hpp:288
+#7  0x00007ff7f1001bb3 in OpenXLSX::XLCellValueProxy::get<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, void> (      
+    this=0x5ffd68) at F:/qt/OpenXLSX/OpenXLSX/headers/XLCellValue.hpp:540
+#8  0x00007ff7f0f615bb in readExcel (filePath="F:/qt/file.xlsx") at F:\qt\readExcel.cpp:14
+#9  0x00007ff7f0f61857 in main () at F:\qt\readExcel.cpp:22
+(gdb)
