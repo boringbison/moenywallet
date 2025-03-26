@@ -45,7 +45,7 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
 
             if (storedUsername == username && storedPassword == password)
             {
-                cout << "✅ Dang nhap thanh cong!\n";
+                cout << " Dang nhap thanh cong!\n";
                 doc.close();
                 return User{storedUsername, storedRole};
             }
@@ -54,12 +54,12 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
         }
 
         doc.close();
-        cout << "❌ Ten dang nhap hoac mat khau khong dung.\n";
+        cout << " Ten dang nhap hoac mat khau khong dung.\n";
         return std::nullopt;
     }
     catch (const exception &e)
     {
-        cerr << "🚫 Loi khi mo file Excel: " << e.what() << endl;
+        cerr << " Loi khi mo file Excel: " << e.what() << endl;
         return std::nullopt;
     }
 }

@@ -51,13 +51,13 @@ void getUserInfo(const string &filePath, const string &username)
 
         if (!found)
         {
-            cout << "❌ Không tìm thấy người dùng: " << username << endl;
+            cout << " Không tìm thấy người dùng: " << username << endl;
             doc.close();
             return;
         }
 
         // In thông tin đầy đủ
-        cout << "✅ Thông tin người dùng:\n";
+        cout << " Thông tin người dùng:\n";
         cout << "ID               : " << getCellAsString(wks, row, 1) << endl;
         cout << "Username         : " << getCellAsString(wks, row, 2) << endl;
         cout << "Password         : " << getCellAsString(wks, row, 3) << endl;

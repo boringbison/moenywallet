@@ -93,7 +93,7 @@ void adminMenu(const User &user)
             cout << "Đang đăng xuất...\n";
             break;
         default:
-            cout << "❌ Lựa chọn không hợp lệ!\n";
+            cout << " Lựa chọn không hợp lệ!\n";
         }
     } while (choice != 0);
 }
@@ -216,10 +216,10 @@ UserUpdateData inputUserData()
             break;
         }
         case 0:
-            cout << "✅ Hoàn tất nhập thông tin.\n";
+            cout << " Hoàn tất nhập thông tin.\n";
             break;
         default:
-            cout << "❌ Lựa chọn không hợp lệ. Vui lòng thử lại.\n";
+            cout << " Lựa chọn không hợp lệ. Vui lòng thử lại.\n";
         }
     } while (choice != 0);
 
