@@ -3,6 +3,7 @@
 #include "user.h"
 #include "get_user_info.h"
 #include "update_user.h"
+#include "transfer.h"
 #include "menu.h"
 #include "admin.h"
 
@@ -31,10 +32,12 @@ void userMenu(const User &user)
         cout << "1. Kiểm tra thông tin" << endl;
         cout << "2. Cập nhật thông tin" << endl;
         cout << "3. Giao dịch" << endl;
+        cout << "4. Chuyển tiền" << endl;
         cout << "0. Thoát" << endl;
         cout << "===============================" << endl;
         cout << "Nhap lua chon cua ban: ";
         cin >> choice;
+
         switch (choice)
         {
         case 1:
@@ -46,11 +49,18 @@ void userMenu(const User &user)
         case 3:
             cout << "💸 Thuc hien giao dich (chua xu ly)\n";
             break;
+        case 4:
+        {
+            string filePathUser = "../data/users.xlsx";
+            string filePathLog = "../data/logs.xlsx";
+            transferPoints(filePathUser, filePathLog); // Gọi hàm chuyển điểm
+            break;
+        }
         case 0:
             cout << "⬅️ Dang xuat khoi tai khoan nguoi dung...\n";
             break;
         default:
-            cout << "Lua chon khong hop le!\n";
+            cout << "❌ Lua chon khong hop le! Vui long chon lai.\n";
             break;
         }
         cout << endl;
@@ -65,6 +75,7 @@ void adminMenu(const User &user)
         cout << "1. Xem danh sách người dùng\n";
         cout << "2. Tạo tài khoản mới\n";
         cout << "3. Chỉnh sửa tài khoản\n";
+        cout << "4. Chuyển điểm giữa các tài khoản\n";
         cout << "0. Đăng xuất\n";
         cout << "Chọn chức năng: ";
         cin >> choice;
@@ -89,6 +100,13 @@ void adminMenu(const User &user)
             updateUserInfo(targetUser, "", true); // adminMode = true
             break;
         }
+        case 4:
+        {
+            string filePathUser = "../data/users.xlsx";
+            string filePathLog = "../data/logs.xlsx";
+            transferPoints(filePathUser, filePathLog);  // Gọi hàm chuyển điểm
+            break;
+        }
         case 0:
             cout << "Đang đăng xuất...\n";
             break;
@@ -97,6 +115,7 @@ void adminMenu(const User &user)
         }
     } while (choice != 0);
 }
+
 
 pair<string, string> getLoginInput()
 {
