@@ -80,7 +80,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                         cout << "Mật khẩu không hợp lệ( mật khẩu phải từ 6 ký tự). Hủy cập nhật.\n";
                         return;
                     }
-                    wks.cell("C" + to_string(row)).value() = data.password;
+                    wks.cell("C" + to_string(row)).value() = XLCellValue(data.password); // hoặc ép rõ string
                 }
 
                 if (!data.fullName.empty())
