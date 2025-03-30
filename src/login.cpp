@@ -36,10 +36,13 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
             string storedPassword = (passCell.type() == XLValueType::String)
                                         ? passCell.get<string>()
                                         : to_string(passCell.get<int>());
-
+            cout << "[DEBUG] Đọc dòng " << row
+                 << ": username = '" << storedUsername
+                 << "', password = '" << storedPassword << "'\n";
             string storedRole = (roleCell.type() == XLValueType::String)
                                     ? roleCell.get<string>()
                                     : "user";
+            cout << "[DEBUG] Đọc role từ dòng " << row << ": '" << storedRole << "'\n";
 
             std::transform(storedRole.begin(), storedRole.end(), storedRole.begin(), ::tolower);
             storedRole.erase(remove_if(storedRole.begin(), storedRole.end(), ::isspace), storedRole.end());
