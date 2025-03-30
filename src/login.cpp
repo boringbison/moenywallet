@@ -3,6 +3,7 @@
 #include <OpenXLSX.hpp>
 #include <iostream>
 #include <optional>
+#include <algorithm>
 
 using namespace std;
 using namespace OpenXLSX;
@@ -20,46 +21,70 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
         {
             auto &userCell = wks.cell("B" + to_string(row)).value();
             auto &passCell = wks.cell("C" + to_string(row)).value();
-            auto &roleCell = wks.cell("O" + to_string(row)).value(); // Cột Role
+            auto &roleCell = wks.cell("O" + to_string(row)).value();    // role
+            auto &balanceCell = wks.cell("K" + to_string(row)).value(); // balance
+            auto &idCell = wks.cell("A" + to_string(row)).value();      // user_id
+            auto &isAdminCell = wks.cell("M" + to_string(row)).value(); // is_admin
 
             if (userCell.type() == XLValueType::Empty)
                 break;
 
-            string storedUsername, storedPassword, storedRole;
+            string storedUsername = (userCell.type() == XLValueType::String)
+                                        ? userCell.get<string>()
+                                        : to_string(userCell.get<int>());
 
-            // Username
-            storedUsername = (userCell.type() == XLValueType::String)
-                                 ? userCell.get<string>()
-                                 : to_string(userCell.get<int>());
+            string storedPassword = (passCell.type() == XLValueType::String)
+                                        ? passCell.get<string>()
+                                        : to_string(passCell.get<int>());
 
-            // Password
-            storedPassword = (passCell.type() == XLValueType::String)
-                                 ? passCell.get<string>()
-                                 : to_string(passCell.get<int>());
+            string storedRole = (roleCell.type() == XLValueType::String)
+                                    ? roleCell.get<string>()
+                                    : "user";
 
-            // Role
-            if (roleCell.type() == XLValueType::String)
-                storedRole = roleCell.get<string>();
-            else
-                storedRole = "user"; // mặc định
+            std::transform(storedRole.begin(), storedRole.end(), storedRole.begin(), ::tolower);
+            storedRole.erase(remove_if(storedRole.begin(), storedRole.end(), ::isspace), storedRole.end());
 
             if (storedUsername == username && storedPassword == password)
             {
-                cout << " Dang nhap thanh cong!\n";
+                User user;
+                user.username = storedUsername;
+                user.password = storedPassword;
+                user.role = storedRole;
+
+                // Gán thêm thông tin bổ sung (nếu cần sử dụng sau này)
+                user.user_id = (idCell.type() == XLValueType::Integer) ? idCell.get<int>() : 0;
+
+                // Xử lý balance (có thể là string chứa dấu phẩy)
+                try
+                {
+                    if (balanceCell.type() == XLValueType::Float)
+                        user.balance = static_cast<int>(balanceCell.get<double>());
+                    else
+                        user.balance = stoi(balanceCell.get<string>());
+                }
+                catch (...)
+                {
+                    user.balance = 0;
+                }
+
+                // Xử lý is_admin (0 hoặc 1)
+                user.is_admin = (isAdminCell.type() == XLValueType::Integer) ? isAdminCell.get<int>() == 1 : false;
+
                 doc.close();
-                return User{storedUsername, storedRole};
+                cout << " >>> Đăng nhập thành công! Role: " << user.role << ", ID: " << user.user_id << "\n";
+                return user;
             }
 
             row++;
         }
 
         doc.close();
-        cout << " Ten dang nhap hoac mat khau khong dung.\n";
+        cout << "Tên đăng nhập hoặc mật khẩu không đúng.\n";
         return std::nullopt;
     }
     catch (const exception &e)
     {
-        cerr << " Loi khi mo file Excel: " << e.what() << endl;
+        cerr << "Lỗi khi mở file Excel: " << e.what() << endl;
         return std::nullopt;
     }
 }

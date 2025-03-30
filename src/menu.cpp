@@ -3,8 +3,10 @@
 #include "user.h"
 #include "get_user_info.h"
 #include "update_user.h"
+#include "transfer.h"
 #include "menu.h"
 #include "admin.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -31,10 +33,20 @@ void userMenu(const User &user)
         cout << "1. Kiểm tra thông tin" << endl;
         cout << "2. Cập nhật thông tin" << endl;
         cout << "3. Giao dịch" << endl;
+        cout << "4. Chuyển tiền" << endl;
         cout << "0. Thoát" << endl;
         cout << "===============================" << endl;
         cout << "Nhap lua chon cua ban: ";
         cin >> choice;
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "⚠️ Vui lòng nhập số (0–2)!\n";
+            continue;
+        }
+
         switch (choice)
         {
         case 1:
@@ -46,11 +58,18 @@ void userMenu(const User &user)
         case 3:
             cout << "💸 Thuc hien giao dich (chua xu ly)\n";
             break;
+        case 4:
+        {
+            string filePathUser = "../data/users.xlsx";
+            string filePathLog = "../data/logs.xlsx";
+            transferPoints(filePathUser, filePathLog); // Gọi hàm chuyển điểm
+            break;
+        }
         case 0:
-            cout << "⬅️ Dang xuat khoi tai khoan nguoi dung...\n";
+            cout << " Dang xuat khoi tai khoan nguoi dung...\n";
             break;
         default:
-            cout << "Lua chon khong hop le!\n";
+            cout << " Lua chon khong hop le! Vui long chon lai.\n";
             break;
         }
         cout << endl;
@@ -65,10 +84,18 @@ void adminMenu(const User &user)
         cout << "1. Xem danh sách người dùng\n";
         cout << "2. Tạo tài khoản mới\n";
         cout << "3. Chỉnh sửa tài khoản\n";
+        cout << "4. Chuyển điểm giữa các tài khoản\n";
         cout << "0. Đăng xuất\n";
         cout << "Chọn chức năng: ";
         cin >> choice;
-        cin.ignore();
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "⚠️ Vui lòng nhập số (0–2)!\n";
+            continue;
+        }
 
         switch (choice)
         {
@@ -87,6 +114,13 @@ void adminMenu(const User &user)
             cout << "Nhập username cần cập nhật: ";
             cin >> targetUser;
             updateUserInfo(targetUser, "", true); // adminMode = true
+            break;
+        }
+        case 4:
+        {
+            string filePathUser = "../data/users.xlsx";
+            string filePathLog = "../data/logs.xlsx";
+            transferPoints(filePathUser, filePathLog); // Gọi hàm chuyển điểm
             break;
         }
         case 0:
@@ -115,6 +149,14 @@ void handleMenu()
     {
         showMainMenu();
         cin >> choice;
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Vui lòng nhập số (0–2)!\n";
+            continue;
+        }
 
         switch (choice)
         {
@@ -166,10 +208,20 @@ UserUpdateData inputUserData()
         cout << "5. Thay đổi email\n";
         cout << "6. Thay đổi ngày sinh\n";
         cout << "7. Nạp thêm điểm vào ví\n";
+        cout << "8. Thoát cập nhật không thay đổi gì\n";
         cout << "0. Hoàn tất cập nhật\n";
         cout << "Chọn mục bạn muốn thay đổi: ";
         cin >> choice;
-        cin.ignore(); // Xóa \n trước khi getline
+
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "⚠️ Vui lòng nhập số hợp lệ!\n";
+            continue;
+        }
+
+        cin.ignore();
 
         switch (choice)
         {
@@ -210,18 +262,27 @@ UserUpdateData inputUserData()
                 }
                 catch (...)
                 {
-                    cout << "⚠️ Giá trị nhập không hợp lệ. Bỏ qua.\n";
+                    cout << "Giá trị nhập không hợp lệ. Bỏ qua.\n";
                 }
             }
             break;
         }
+        case 8:
+            cout << "Hủy bỏ cập nhật thông tin. Quay lại menu.\n";
+            return {};
+
         case 0:
-            cout << " Hoàn tất nhập thông tin.\n";
+            cout << "Hoàn tất nhập thông tin.\n";
             break;
         default:
-            cout << " Lựa chọn không hợp lệ. Vui lòng thử lại.\n";
+            cout << "Lựa chọn không hợp lệ. Vui lòng thử lại.\n";
         }
     } while (choice != 0);
+
+    if (isEmpty(userData))
+    {
+        return {};
+    }
 
     return userData;
 }

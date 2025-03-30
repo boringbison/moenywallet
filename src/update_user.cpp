@@ -3,6 +3,7 @@
 #include <iostream>
 #include <OpenXLSX.hpp>
 #include "validate.h"
+#include "utils.h"
 
 using namespace std;
 using namespace OpenXLSX;
@@ -13,6 +14,11 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
     cout << "=== Cập nhật thông tin người dùng ===\n";
 
     UserUpdateData data = inputUserData();
+    if (isEmpty(data))
+    {
+        cout << "Không có thông tin nào được cập nhật. Hủy thao tác.\n";
+        return;
+    }
 
     if (!adminMode)
     {
@@ -20,13 +26,13 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
         getline(cin, otpInput);
         if (otpInput != expectedOtp)
         {
-            cout << "❌ OTP không hợp lệ. Hủy cập nhật.\n";
+            cout << "OTP không hợp lệ. Hủy cập nhật.\n";
             return;
         }
     }
     else
     {
-        cout << "⚠️ Đang cập nhật với quyền quản lý (bỏ qua OTP)...\n";
+        cout << "Đang cập nhật với quyền quản lý (bỏ qua OTP)...\n";
     }
 
     try
@@ -47,7 +53,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                 {
                     if (!isValidPassword(data.password))
                     {
-                        cout << " Mật khẩu không hợp lệ( mật khẩu phải từ 6 ký tự). Hủy cập nhật.\n";
+                        cout << "Mật khẩu không hợp lệ( mật khẩu phải từ 6 ký tự). Hủy cập nhật.\n";
                         return;
                     }
                     wks.cell("C" + to_string(row)).value() = data.password;
@@ -57,7 +63,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                 {
                     if (!isValidFullName(data.fullName))
                     {
-                        cout << " Tên người dùng có ký tự không hợp lệ. Hủy cập nhật.\n";
+                        cout << "Tên người dùng có ký tự không hợp lệ. Hủy cập nhật.\n";
                         return;
                     }
                     wks.cell("D" + to_string(row)).value() = data.fullName;
@@ -67,7 +73,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                 {
                     if (!isValidPhone(data.phone))
                     {
-                        cout << " Số điện thoại người dùng không hợp lệ. Hủy cập nhật.\n";
+                        cout << "Số điện thoại người dùng không hợp lệ. Hủy cập nhật.\n";
                         return;
                     }
                     wks.cell("E" + to_string(row)).value() = data.phone;
@@ -80,7 +86,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                 {
                     if (!isValidEmail(data.email))
                     {
-                        cout << " Email người dùng không hợp lệ. Hủy cập nhật.\n";
+                        cout << "Email người dùng không hợp lệ. Hủy cập nhật.\n";
                         return;
                     }
                     wks.cell("G" + to_string(row)).value() = data.email;
@@ -90,7 +96,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                 {
                     if (!isValidBirthday(data.birthday))
                     {
-                        cout << " Ngày sinh người dùng không hợp lệ. Hủy cập nhật.\n";
+                        cout << "Ngày sinh người dùng không hợp lệ. Hủy cập nhật.\n";
                         return;
                     }
                     wks.cell("H" + to_string(row)).value() = data.birthday;
@@ -123,17 +129,21 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
 
                     double newBalance = currentBalance + data.balance.value();
                     balanceCell.value() = newBalance;
-                    cout << " Đã nạp thêm " << data.balance.value() << " điểm.\n";
+                    cout << "Đã nạp thêm " << data.balance.value() << " điểm.\n";
                 }
 
-                cout << " Cập nhật thông tin thành công!\n";
+                cout << "Cập nhật thông tin thành công!\n";
+                // Cập nhật cột Update_At (J)
+                wks.cell("J" + to_string(row)).value() = getCurrentDateTime();
+                cout << "Cập nhật thời gian Update_At: " << getCurrentDateTime() << endl;
+
                 break;
             }
         }
 
         if (!userFound)
         {
-            cout << " Không tìm thấy người dùng trong hệ thống.\n";
+            cout << "Không tìm thấy người dùng trong hệ thống.\n";
         }
 
         doc.save();
@@ -141,6 +151,6 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
     }
     catch (const exception &e)
     {
-        cout << " Lỗi khi cập nhật file Excel: " << e.what() << endl;
+        cout << "Lỗi khi cập nhật file Excel: " << e.what() << endl;
     }
 }
