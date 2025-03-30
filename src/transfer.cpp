@@ -31,6 +31,26 @@ User findUser(XLWorksheet& sheet, const std::string& username) {
     return { "", "", "", 0, 0, false };
 }
 
+User findAdmin(XLWorksheet &sheet)
+{
+    for (int row = 2; sheet.cell(row, 1).value().type() != XLValueType::Empty; ++row)
+    {
+        if (sheet.cell(row, 13).value().type() == XLValueType::Integer &&
+            sheet.cell(row, 13).value().get<int>() == 1)
+        {
+
+            return {
+                sheet.cell(row, 2).value().get<std::string>(), // Username
+                sheet.cell(row, 3).value().type() == XLValueType::String ? sheet.cell(row, 3).value().get<std::string>() : "",
+                sheet.cell(row, 14).value().type() == XLValueType::String ? sheet.cell(row, 14).value().get<std::string>() : "",
+                sheet.cell(row, 11).value().type() == XLValueType::Integer ? sheet.cell(row, 11).value().get<int>() : 0,
+                row,
+                true // is_admin = true
+            };
+        }
+    }
+    return {"", "", "", 0, 0, false}; // Không tìm thấy
+}
 
 // Hàm ghi log giao dịch
 void logTransaction(XLWorksheet& logSheet, int userId, const std::string& action, 
@@ -61,7 +81,7 @@ void logTransaction(XLWorksheet& logSheet, int userId, const std::string& action
 
 
 // Hàm thực hiện giao dịch
-void transferPoints(const std::string& filePathUser, const std::string& filePathLog) {
+void transferPoints(const std::string& filePathUser, const std::string& filePathLog,  const std::string& userNameSender) {
     XLDocument docUser;
     docUser.open(filePathUser);
      XLDocument docLog;
@@ -83,19 +103,18 @@ if (!hasAdmin) {
     return;
 }
 
-    string adminName = "admin";
-    User admin = findUser(userSheet, adminName);
-    if (admin.username.empty()) {
-        cout << "❌ Không tìm thấy tài khoản admin!\n";
-        return;
-    }
+User admin = findAdmin(userSheet);
+if (admin.username.empty())
+{
+    cout << "❌ Không tìm thấy tài khoản admin!\n";
+    return;
+}
 
     string senderName, recipientName;
     int amount;
 
-    cout << "🔧 Nhập tài khoản chuyển: ";
-    cin >> senderName;
-    User sender = findUser(userSheet, senderName);
+
+    User sender = findUser(userSheet, userNameSender);
     if (sender.username.empty()) {
         cout << "❌ Tài khoản gửi không hợp lệ!\n";
         return;

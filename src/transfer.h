@@ -17,6 +17,6 @@ void logTransaction(XLWorksheet& logSheet, int userId, const std::string& action
                     int oldValue, int newValue, int senderId, int recipientId);
 
 // Thực hiện giao dịch
-void transferPoints(const std::string& filePathUser, const std::string& filePathLog);
+void transferPoints(const std::string& filePathUser, const std::string& filePathLog, const std::string& userNameSender);
 
 #endif

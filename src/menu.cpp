@@ -33,7 +33,6 @@ void userMenu(const User &user)
         cout << "1. Kiểm tra thông tin" << endl;
         cout << "2. Cập nhật thông tin" << endl;
         cout << "3. Giao dịch" << endl;
-        cout << "4. Chuyển tiền" << endl;
         cout << "0. Thoát" << endl;
         cout << "===============================" << endl;
         cout << "Nhap lua chon cua ban: ";
@@ -56,13 +55,10 @@ void userMenu(const User &user)
             updateUserInfo(user.username, "123456"); // giả định OTP đúng là 123456
             break;
         case 3:
-            cout << "💸 Thuc hien giao dich (chua xu ly)\n";
-            break;
-        case 4:
         {
             string filePathUser = "../data/users.xlsx";
             string filePathLog = "../data/logs.xlsx";
-            transferPoints(filePathUser, filePathLog); // Gọi hàm chuyển điểm
+            transferPoints(filePathUser, filePathLog, user.username); // Gọi hàm chuyển điểm
             break;
         }
         case 0:
@@ -120,7 +116,7 @@ void adminMenu(const User &user)
         {
             string filePathUser = "../data/users.xlsx";
             string filePathLog = "../data/logs.xlsx";
-            transferPoints(filePathUser, filePathLog); // Gọi hàm chuyển điểm
+            transferPoints(filePathUser, filePathLog, user.username);  // Gọi hàm chuyển điểm
             break;
         }
         case 0:
