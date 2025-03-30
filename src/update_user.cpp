@@ -8,8 +8,32 @@
 using namespace std;
 using namespace OpenXLSX;
 
+bool doesUserExist(const std::string &username)
+{
+    XLDocument doc;
+    doc.open("../data/users.xlsx");
+    auto wks = doc.workbook().worksheet("Sheet1");
+
+    for (uint32_t row = 2; row <= wks.rowCount(); ++row)
+    {
+        string uname = wks.cell("B" + to_string(row)).value().get<string>();
+        if (uname == username)
+        {
+            doc.close();
+            return true;
+        }
+    }
+    doc.close();
+    return false;
+}
+
 void updateUserInfo(const std::string &username, const std::string &expectedOtp, bool adminMode)
 {
+    if (!doesUserExist(username))
+    {
+        cout << "Không tìm thấy người dùng " << username << ". Hủy cập nhật.\n";
+        return;
+    }
     string otpInput;
     cout << "=== Cập nhật thông tin người dùng ===\n";
 
