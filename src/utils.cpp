@@ -25,3 +25,5 @@ bool isEmpty(const UserUpdateData &data)
            data.birthday.empty() &&
            !data.balance.has_value();
 }
+
+

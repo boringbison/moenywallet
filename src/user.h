@@ -3,14 +3,15 @@
 
 #include <string>
 
-struct User {
+struct User
+{
     std::string username;
     std::string password;
     std::string role;
     int balance;
     int user_id;
     bool is_admin;
+    bool isActive;
 };
 
 #endif
-

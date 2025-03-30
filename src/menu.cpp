@@ -93,7 +93,7 @@ void adminMenu(const User &user)
         {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "⚠️ Vui lòng nhập số (0–2)!\n";
+            cout << "Vui lòng nhập số (0-2)!\n";
             continue;
         }
 
@@ -217,7 +217,8 @@ UserUpdateData inputUserData()
         {
             cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cout << "⚠️ Vui lòng nhập số hợp lệ!\n";
+            cout << "Vui lòng nhập số hợp lệ!\n";
+            choice = -1;
             continue;
         }
 
