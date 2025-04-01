@@ -7,7 +7,7 @@
 #include "menu.h"
 #include "admin.h"
 #include "utils.h"
-
+#include "add_user.cpp"
 using namespace std;
 
 void showMainMenu()
@@ -61,6 +61,14 @@ void userMenu(const User &user)
             transferPoints(filePathUser, filePathLog, user.username); // Gọi hàm chuyển điểm
             break;
         }
+        case 4:
+            {
+                string targetUser;
+                string filePathUser = "../data/users.xlsx";
+                cout << "Nhập tài khoản cần xóa:";
+                cin >> targetUser;
+                deleteUser(filePathUser,targetUser, false)
+            }
         case 0:
             cout << " Dang xuat khoi tai khoan nguoi dung...\n";
             break;
@@ -81,6 +89,7 @@ void adminMenu(const User &user)
         cout << "2. Tạo tài khoản mới\n";
         cout << "3. Chỉnh sửa tài khoản\n";
         cout << "4. Chuyển điểm giữa các tài khoản\n";
+        cout << "5. Xóa tài khoản\n";
         cout << "0. Đăng xuất\n";
         cout << "Chọn chức năng: ";
         cin >> choice;
@@ -116,9 +125,17 @@ void adminMenu(const User &user)
         {
             string filePathUser = "../data/users.xlsx";
             string filePathLog = "../data/logs.xlsx";
-            transferPoints(filePathUser, filePathLog, user.username);  // Gọi hàm chuyển điểm
+            transferPoints(filePathUser, filePathLog, user.username,);  // Gọi hàm chuyển điểm
             break;
         }
+        case 5:
+            {
+                string targetUser;
+                string filePathUser = "../data/users.xlsx";
+                cout << "Nhập tài khoản cần xóa:";
+                cin >> targetUser;
+                deleteUser(filePathUser,targetUser, true)
+            }
         case 0:
             cout << "Đang đăng xuất...\n";
             break;
@@ -176,7 +193,11 @@ void handleMenu()
             break;
         }
         case 2:
-            cout << "Dang ky (chua xu ly)\n";
+        string targetRole;
+                string filePathUser = "../data/users.xlsx";
+                cout << "Nhập role cần thêm mới (admin hoặc user):";
+                cin >> targetRole;
+        addUser(filePathUser,targetRole);
             break;
         case 0:
             cout << "Tam biet!\n";
