@@ -40,12 +40,22 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
                     break;  // ra khỏi vòng while nội → thực hiện retry ở vòng ngoài
                 }
 
+                       // Log sau chuẩn hóa
+                std::cout << "[DEBUG] userCell: '" << userCell << "'\n";
+                std::cout << "[DEBUG] passCell: '" << passCell << "'\n";
+
                 std::string storedUsername = (userCell.type() == XLValueType::String)
                                                 ? userCell.get<std::string>()
                                                 : (userCell.type() == XLValueType::Integer) ? std::to_string(userCell.get<int>()) : "";
                 std::string storedPassword = (passCell.type() == XLValueType::String)
                                                 ? passCell.get<std::string>()
                                                 : (passCell.type() == XLValueType::Integer) ? std::to_string(passCell.get<int>()) : "";
+
+                                                                                                
+                // Log sau chuẩn hóa
+                std::cout << "[DEBUG] storedUsername: '" << storedUsername << "'\n";
+                std::cout << "[DEBUG] storedPassword: '" << storedPassword << "'\n";
+
 
                 if (storedUsername.empty() || storedPassword.empty())
                 {
