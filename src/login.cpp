@@ -3,7 +3,6 @@
 #include <OpenXLSX.hpp>
 #include <iostream>
 #include <optional>
-#include <algorithm>
 
 using namespace std;
 using namespace OpenXLSX;
@@ -12,82 +11,96 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
 {
     try
     {
-        XLDocument doc;
-        doc.open("../data/users.xlsx");
-        auto wks = doc.workbook().worksheet("Sheet1");
+        int retryCount = 0;
+        const int maxRetries = 3;
 
-        int row = 2;
         while (true)
         {
-            auto &userCell = wks.cell("B" + to_string(row)).value();
-            auto &passCell = wks.cell("C" + to_string(row)).value();
-            auto &roleCell = wks.cell("O" + to_string(row)).value();    // role
-            auto &balanceCell = wks.cell("K" + to_string(row)).value(); // balance
-            auto &idCell = wks.cell("A" + to_string(row)).value();      // user_id
-            auto &isAdminCell = wks.cell("M" + to_string(row)).value(); // is_admin
+            XLDocument doc;
+            doc.open("../data/users.xlsx");
+            auto wks = doc.workbook().worksheet("Sheet1");
 
-            if (userCell.type() == XLValueType::Empty)
-                break;
+            int row = 2;
+            bool foundMatch = false;
 
-            string storedUsername = (userCell.type() == XLValueType::String)
-                                        ? userCell.get<string>()
-                                        : to_string(userCell.get<int>());
-
-            string storedPassword = (passCell.type() == XLValueType::String)
-                                        ? passCell.get<string>()
-                                        : to_string(passCell.get<int>());
-            cout << "[DEBUG] Đọc dòng " << row
-                 << ": username = '" << storedUsername
-                 << "', password = '" << storedPassword << "'\n";
-            string storedRole = (roleCell.type() == XLValueType::String)
-                                    ? roleCell.get<string>()
-                                    : "user";
-            cout << "[DEBUG] Đọc role từ dòng " << row << ": '" << storedRole << "'\n";
-
-            std::transform(storedRole.begin(), storedRole.end(), storedRole.begin(), ::tolower);
-            storedRole.erase(remove_if(storedRole.begin(), storedRole.end(), ::isspace), storedRole.end());
-
-            if (storedUsername == username && storedPassword == password)
+            while (true)
             {
-                User user;
-                user.username = storedUsername;
-                user.password = storedPassword;
-                user.role = storedRole;
+                auto &userCell = wks.cell("B" + std::to_string(row)).value();
+                auto &passCell = wks.cell("C" + std::to_string(row)).value();
+                auto &roleCell = wks.cell("O" + std::to_string(row)).value();
+                auto &balanceCell = wks.cell("K" + std::to_string(row)).value();
+                auto &idCell = wks.cell("A" + std::to_string(row)).value();
+                auto &isAdminCell = wks.cell("M" + std::to_string(row)).value();
 
-                // Gán thêm thông tin bổ sung (nếu cần sử dụng sau này)
-                user.user_id = (idCell.type() == XLValueType::Integer) ? idCell.get<int>() : 0;
-
-                // Xử lý balance (có thể là string chứa dấu phẩy)
-                try
+                // Nếu user hoặc pass trống → reset
+                if (userCell.type() == XLValueType::Empty || passCell.type() == XLValueType::Empty)
                 {
-                    if (balanceCell.type() == XLValueType::Float)
-                        user.balance = static_cast<int>(balanceCell.get<double>());
-                    else
-                        user.balance = stoi(balanceCell.get<string>());
-                }
-                catch (...)
-                {
-                    user.balance = 0;
+                    std::cerr << "Phát hiện ô dữ liệu trống tại dòng " << row << ". Reset lại vòng lặp từ đầu...\n";
+                    doc.close();
+                    break;  // ra khỏi vòng while nội → thực hiện retry ở vòng ngoài
                 }
 
-                // Xử lý is_admin (0 hoặc 1)
-                user.is_admin = (isAdminCell.type() == XLValueType::Integer) ? isAdminCell.get<int>() == 1 : false;
+                std::string storedUsername = (userCell.type() == XLValueType::String)
+                                                ? userCell.get<std::string>()
+                                                : (userCell.type() == XLValueType::Integer) ? std::to_string(userCell.get<int>()) : "";
+                std::string storedPassword = (passCell.type() == XLValueType::String)
+                                                ? passCell.get<std::string>()
+                                                : (passCell.type() == XLValueType::Integer) ? std::to_string(passCell.get<int>()) : "";
 
-                doc.close();
-                cout << " >>> Đăng nhập thành công! Role: " << user.role << ", ID: " << user.user_id << "\n";
-                return user;
+                if (storedUsername.empty() || storedPassword.empty())
+                {
+                    row++;
+                    continue;
+                }
+
+                std::string storedRole = (roleCell.type() == XLValueType::String) ? roleCell.get<std::string>() : "user";
+                std::transform(storedRole.begin(), storedRole.end(), storedRole.begin(), ::tolower);
+                storedRole.erase(remove_if(storedRole.begin(), storedRole.end(), ::isspace), storedRole.end());
+
+                if (storedUsername == username && storedPassword == password)
+                {
+                    User user;
+                    user.username = storedUsername;
+                    user.password = storedPassword;
+                    user.role = storedRole;
+                    user.user_id = (idCell.type() == XLValueType::Integer) ? idCell.get<int>() : 0;
+
+                    try
+                    {
+                        if (balanceCell.type() == XLValueType::Float)
+                            user.balance = static_cast<int>(balanceCell.get<double>());
+                        else
+                            user.balance = stoi(balanceCell.get<std::string>());
+                    }
+                    catch (...)
+                    {
+                        user.balance = 0;
+                    }
+
+                    user.is_admin = (isAdminCell.type() == XLValueType::Integer) ? isAdminCell.get<int>() == 1 : false;
+
+                    std::cout << " >>> Đăng nhập thành công! Role: " << user.role << ", ID: " << user.user_id << "\n";
+                    doc.close();
+                    return user;
+                }
+
+                row++;
             }
 
-            row++;
-        }
+            // Nếu duyệt hết mà không return → thất bại
+            retryCount++;
+            if (retryCount > maxRetries)
+            {
+                std::cerr << "Quá số lần đăng nhập tối đa. Thoát.\n";
+                return std::nullopt;
+            }
 
-        doc.close();
-        cout << "Tên đăng nhập hoặc mật khẩu không đúng.\n";
-        return std::nullopt;
+            std::cout << "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại. (" << retryCount << "/" << maxRetries << ")\n";
+        }
     }
-    catch (const exception &e)
+    catch (const std::exception &e)
     {
-        cerr << "Lỗi khi mở file Excel: " << e.what() << endl;
+        std::cerr << "Error: " << e.what() << std::endl;
         return std::nullopt;
     }
 }
