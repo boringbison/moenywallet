@@ -7,7 +7,8 @@
 #include "menu.h"
 #include "admin.h"
 #include "utils.h"
-#include "add_user.cpp"
+#include "add_user.h"
+#include "delete_user.h"
 using namespace std;
 
 void showMainMenu()
@@ -67,7 +68,7 @@ void userMenu(const User &user)
                 string filePathUser = "../data/users.xlsx";
                 cout << "Nhập tài khoản cần xóa:";
                 cin >> targetUser;
-                deleteUser(filePathUser,targetUser, false)
+                deleteUser(filePathUser,targetUser, false);
             }
         case 0:
             cout << " Dang xuat khoi tai khoan nguoi dung...\n";
@@ -125,7 +126,7 @@ void adminMenu(const User &user)
         {
             string filePathUser = "../data/users.xlsx";
             string filePathLog = "../data/logs.xlsx";
-            transferPoints(filePathUser, filePathLog, user.username,);  // Gọi hàm chuyển điểm
+            transferPoints(filePathUser, filePathLog, user.username);  // Gọi hàm chuyển điểm
             break;
         }
         case 5:
@@ -134,7 +135,7 @@ void adminMenu(const User &user)
                 string filePathUser = "../data/users.xlsx";
                 cout << "Nhập tài khoản cần xóa:";
                 cin >> targetUser;
-                deleteUser(filePathUser,targetUser, true)
+                deleteUser(filePathUser,targetUser, true);
             }
         case 0:
             cout << "Đang đăng xuất...\n";
@@ -193,12 +194,14 @@ void handleMenu()
             break;
         }
         case 2:
-        string targetRole;
+        {
+                string targetRole;
                 string filePathUser = "../data/users.xlsx";
                 cout << "Nhập role cần thêm mới (admin hoặc user):";
                 cin >> targetRole;
-        addUser(filePathUser,targetRole);
-            break;
+                addUser(filePathUser,targetRole);
+                break;
+        }
         case 0:
             cout << "Tam biet!\n";
             break;
