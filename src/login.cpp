@@ -12,7 +12,7 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
     try
     {
         int retryCount = 0;
-        const int maxRetries = 3;
+        const int maxRetries = 10;
 
         while (true)
         {
