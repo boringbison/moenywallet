@@ -1,95 +1,90 @@
-💰 MoenyWallet
-MoenyWallet là một ứng dụng quản lý ví cá nhân được phát triển bằng ngôn ngữ C++. Dự án sử dụng thư viện OpenXLSX để lưu trữ và thao tác dữ liệu người dùng trong các file Excel.
+# 📘 Hệ thống quản lý ví điểm thưởng
 
-👥 Thành viên dự án & Phân công công việc
-Họ tên Công việc đảm nhận
-Hoàn Phân tích, phát triển hệ thống, tạo mã otp, fix bug
-Đức Anh Tạo tài khoản, xóa tài khoản
-Nguyên Đăng nhập, đăng xuất, phân luồng, cập nhật thông tin tài khoản, theo dõi thông tin tài khoản
-Quang Xử lý các chức năng liên quan đến ví (nạp, chuyển, nhận điểm, ghi nhận giao dịch)
+## 🧾 Giới thiệu dự án
 
-🧩 Phân tích & Đặc tả chức năng
+Đây là hệ thống dòng lệnh viết bằng **C++**, cho phép người dùng đăng ký, đăng nhập, quản lý thông tin tài khoản và thực hiện các giao dịch điểm thưởng giữa các ví. Dữ liệu được lưu trữ bằng **file Excel (.xlsx)** thông qua thư viện **OpenXLSX**. Giao diện sử dụng dòng lệnh đơn giản, thân thiện, phù hợp với mô hình bài tập lớn học phần C++.
 
-1. Tài khoản
-   Tạo tài khoản:
+## 👨‍💻 Thành viên thực hiện
 
-Admin: Khi tạo mới, mật khẩu sẽ được sinh ngẫu nhiên (role: admin).
+| Họ tên          | MSSV    | Vai trò/Phân công                                                                            |
+| --------------- | ------- | -------------------------------------------------------------------------------------------- |
+| Nguyễn Huy Hoàn | K24DTCN | Trưởng nhóm / phân tích, thiết kế hệ thống, cập nhật OTP, fix bug                            |
+| Lê Thanh Nguyên | K24DTCN | Thành viên / đăng nhập, đăng xuất, cập nhật thông tin cá nhân, phân luồng admin user, fixbug |
+| Trần Anh Đức    | K24DTCN | Thành viên / đăng ký, xóa tài khoản                                                          |
+| Hà Ngọc Quang   | K24DTCN | qThành viên / quản lý ví, giao dịch điểm, ghi nhận log giao dịch                             |
 
-Client: Khi tạo mới, người dùng tự đặt mật khẩu (role: user).
+> 💡 Dự án được thực hiện cá nhân. Mọi commit thể hiện rõ tiến độ từng phần trên GitHub.
 
-Cập nhật thông tin tài khoản:
+📌 Các chức năng đã hoàn thành
 
-Admin: Có quyền cập nhật mọi tài khoản.
+1.  Hệ thống đăng nhập & đăng ký
 
-Client: Chỉ cập nhật được tài khoản của chính mình. Nếu tài khoản do admin tạo, bắt buộc đổi mật khẩu dựa vào trường isAdmin.
+- ✅ Đăng ký tài khoản mới
+- ✅ Admin có thể tạo tài khoản hộ
+- ✅ Mã hóa mật khẩu bằng SHA256 trước khi lưu vào `users.xlsx`
+- ✅ Phân biệt user / admin, lưu vai trò và trạng thái hoạt động
 
-Xóa tài khoản:
+2.  Cập nhật & quản lý thông tin
 
-Admin: Xóa được tất cả tài khoản trừ tài khoản admin.
+- ✅ Người dùng có thể xem, cập nhật thông tin cá nhân
+- ✅ Thông tin được lưu vào file Excel
+- ✅ OTP được yêu cầu khi cập nhật thông tin quan trọng
 
-Client: Chỉ xóa được tài khoản của chính mình.
+3.  Giao dịch & ví điểm
 
-2. Ví điện tử
-   Nạp, chuyển, nhận điểm:
+- ✅ Mỗi user có 1 ví riêng (ID ví duy nhất)
+- ✅ Chuyển điểm giữa các ví (giao dịch atomic)
+- ✅ Kiểm tra số dư trước khi giao dịch điểm
+- ✅ Ghi log giao dịch vào `logs.xlsx`
+- ✅ Chặn tự chuyển điểm cho chính mình
 
-Admin: Khi client nạp điểm, số dư admin giảm, số dư client tăng (ghi trạng thái vào transaction_status).
+4.  Phân quyền rõ ràng
 
-Client: Khi nạp/chuyển điểm, số dư thay đổi tương ứng (ghi trạng thái vào transaction_status).
+- ✅ Người dùng thường: chỉ chỉnh sửa, xóa, thêm thông tin, xem ví, giao dịch điểm cá nhân
+- ✅ Admin: thêm, xóa người dùng, xem toàn bộ danh sách, ví điểm, giao dịch tổng toàn bộ hệ thống
 
-Theo dõi lịch sử giao dịch và số dư:
+🧩 Cấu trúc thư mục
 
-Khi chuyển tiền, lưu giá trị cũ (old_value), giá trị mới (new_value), trạng thái (action: chuyển thành công/thất bại), id người gửi và nhận vào file Excel.
+```
+moenywallet/
+├── include/         # Header files
+├── src/             # Source files (.cpp)
+├── data/            # users.xlsx, logs.xlsx
+├── build/           # Build output
+├── CMakeLists.txt   # File cấu hình CMake
+└── README.md        # Tài liệu mô tả dự án
+```
 
-Khi nhận tiền, lưu tương tự, action là "Nhận tiền".
+🧱 Cách build & chạy
 
-🗂 Cấu trúc thư mục
-text
-src/
-├── add_user.cpp / .h # Thêm người dùng
-├── delete_user.cpp / .h # Xóa người dùng
-├── get_user_info.cpp / .h # Lấy thông tin người dùng
-├── login.cpp / .h # Đăng nhập
-├── transfer.cpp / .h # Chuyển tiền
-├── update_user.cpp / .h # Cập nhật người dùng
-├── validate.cpp / .h # Kiểm tra hợp lệ
-├── main.cpp # Chương trình chính
-├── menu.cpp / .h # Menu CLI
-└── user.h # Struct định nghĩa User
+⚙️ Yêu cầu
 
-data/
-├── users.xlsx # Thông tin người dùng
-└── logs.xlsx # Lịch sử giao dịch
+- C++17 trở lên
+- VS Code, CMake, OpenXLSX đã cấu hình
+- MinGW hoặc compiler tương thích
 
-⚙️ Cài đặt
+▶️ Build & chạy (trên terminal)
 
-1. Yêu cầu hệ thống
-   Trình biên dịch C++ (GCC / MSVC / Clang)
+```bash
+cmake -S . -B build
+cmake --build build
+./build/moenywallet
+```
 
-CMake
+## 🗃️ Các file dữ liệu
 
-Thư viện OpenXLSX
+| File         | Vai trò                               |
+| ------------ | ------------------------------------- |
+| `users.xlsx` | Chứa thông tin tài khoản người dùng   |
+| `logs.xlsx`  | Ghi lại lịch sử giao dịch điểm thưởng |
 
-2. Tải và build dự án
-   bash
-   git clone https://github.com/boringbison/moenywallet.git
-   cd moenywallet
-   mkdir build && cd build
-   cmake ..
-   make
+## 🔐 Bảo mật & OTP
 
-3. Chạy chương trình
+- ✅ Sử dụng SHA256 để băm mật khẩu
+- ✅ OTP sinh ngẫu nhiên khi cập nhật thông tin / giao dịch
+- ✅ Người dùng phải nhập đúng OTP mới được xác nhận
 
-Cách 1:
-bash
-./main
-Cách 2:
-cd build
-cmake --build .
-moneywallet.exe
+## 📚 Tài liệu tham khảo
 
-🚀 Hướng dẫn sử dụng
-Khi chạy chương trình, bạn sẽ thấy menu giao diện dòng lệnh (CLI).
-
-Chọn các chức năng như: tạo tài khoản, đăng nhập, chuyển tiền, xem lịch sử giao dịch, v.v.
-
-Dữ liệu sẽ được lưu vào file Excel trong thư mục data/.
+- OpenXLSX: https://github.com/troldal/OpenXLSX
+- SHA256 C++: https://github.com/B-Con/crypto-algorithms
