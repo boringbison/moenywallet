@@ -3,10 +3,10 @@ MoenyWallet là một ứng dụng quản lý ví cá nhân được phát tri�
 
 👥 Thành viên dự án & Phân công công việc
 Họ tên Công việc đảm nhận
+Hoàn Phân tích, phát triển hệ thống, tạo mã otp, fix bug
 Đức Anh Tạo tài khoản, xóa tài khoản
 Nguyên Đăng nhập, đăng xuất, phân luồng, cập nhật thông tin tài khoản, theo dõi thông tin tài khoản
 Quang Xử lý các chức năng liên quan đến ví (nạp, chuyển, nhận điểm, ghi nhận giao dịch)
-Hoàn Phát triển chức năng lưu backup dữ liệu, sinh mã otp
 
 🧩 Phân tích & Đặc tả chức năng
 
