@@ -244,33 +244,33 @@ UserUpdateData inputUserData()
         {
         case 1:
             cout << "Nhập mật khẩu mới: ";
-            getline(cin, userData.password);
+            getline(cin >> ws, userData.password);
             break;
         case 2:
             cout << "Nhập tên mới: ";
-            getline(cin, userData.fullName);
+            getline(cin >> ws, userData.fullName);
             break;
         case 3:
             cout << "Nhập số điện thoại mới: ";
-            getline(cin, userData.phone);
+            getline(cin >> ws, userData.phone);
             break;
         case 4:
             cout << "Nhập địa chỉ mới: ";
-            getline(cin, userData.address);
+            getline(cin >> ws, userData.address);
             break;
         case 5:
             cout << "Nhập email mới: ";
-            getline(cin, userData.email);
+            getline(cin >> ws, userData.email);
             break;
         case 6:
             cout << "Nhập ngày sinh mới: ";
-            getline(cin, userData.birthday);
+            getline(cin >> ws, userData.birthday);
             break;
         case 7:
         {
             cout << "Nhập số điểm cần thêm: ";
             string tmp;
-            getline(cin, tmp);
+            getline(cin >> ws, tmp);
             if (!tmp.empty())
             {
                 try

@@ -93,6 +93,11 @@ void updateUserInfo(const string &username, bool adminMode)
 
                 if (!data.fullName.empty())
                 {
+                    cout << "DEBUG tên nhập: [" << data.fullName << "]\n";
+                    for (char c : data.fullName)
+                    {
+                        cout << " - Ký tự: '" << c << "' | ASCII: " << (int)c << "\n";
+                    }
                     if (!isValidFullName(data.fullName))
                     {
                         cout << "Tên người dùng có ký tự không hợp lệ. Hủy cập nhật.\n";

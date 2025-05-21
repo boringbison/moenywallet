@@ -27,7 +27,10 @@ bool isValidFullName(const std::string &name)
         return false;
 
     // Regex: chỉ cho phép chữ cái (có dấu hoặc không), dấu cách
-    std::regex pattern("^[A-Za-zÀ-ỹà-ỹ\\s']+$");
+    std::regex pattern("^[a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơ"
+                       "ƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềể"
+                       "ỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợ"
+                       "ụủứừỬỮỰỳỵỷỹýỲỴỶỸ\\s\\-']+$");
 
     return std::regex_match(name, pattern); // bạn có thể kiểm tra không chứa số nếu muốn
 }
