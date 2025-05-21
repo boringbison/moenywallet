@@ -43,6 +43,35 @@
 - ✅ Người dùng thường: chỉ chỉnh sửa, xóa, thêm thông tin, xem ví, giao dịch điểm cá nhân
 - ✅ Admin: thêm, xóa người dùng, xem toàn bộ danh sách, ví điểm, giao dịch tổng toàn bộ hệ thống
 
+5.  Phân tích & Đặc tả chức năng
+    a. Tạo tài khoản:
+    Admin: Khi tạo mới, mật khẩu sẽ được sinh ngẫu nhiên (role: admin).
+
+Client: Khi tạo mới, người dùng tự đặt mật khẩu (role: user).
+
+Cập nhật thông tin tài khoản:
+
+Admin: Có quyền cập nhật mọi tài khoản.
+
+Client: Chỉ cập nhật được tài khoản của chính mình. Nếu tài khoản do admin tạo, bắt buộc đổi mật khẩu dựa vào trường isAdmin.
+
+b. Xóa tài khoản:
+
+Admin: Xóa được tất cả tài khoản trừ tài khoản admin.
+
+Client: Chỉ xóa được tài khoản của chính mình.
+
+c. Ví điện tử Nạp, chuyển, nhận điểm:
+Admin: Khi client nạp điểm, số dư admin giảm, số dư client tăng (ghi trạng thái vào transaction_status).
+
+Client: Khi nạp/chuyển điểm, số dư thay đổi tương ứng (ghi trạng thái vào transaction_status).
+
+d. Theo dõi lịch sử giao dịch và số dư:
+
+Khi chuyển tiền, lưu giá trị cũ (old_value), giá trị mới (new_value), trạng thái (action: chuyển thành công/thất bại), id người gửi và nhận vào file Excel.
+
+Khi nhận tiền, lưu tương tự, action là "Nhận tiền".
+
 🧩 Cấu trúc thư mục
 moenywallet/
 ├── CMakeLists.txt # File cấu hình CMake để build dự án
