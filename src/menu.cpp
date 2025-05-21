@@ -76,15 +76,12 @@ void userMenu(const User &user)
             break;
         case 4:
         {
-            string targetUser;
-            cout << "Nhập tài khoản cần xóa: ";
-            cin >> targetUser;
             char confirm;
-            cout << "Bạn có chắc chắn muốn xóa tài khoản " << targetUser << "? (y/n): ";
+            cout << "Bạn có muốn xóa tài khoản của mình không? (y/n): ";
             cin >> confirm;
             if (confirm == 'y' || confirm == 'Y')
             {
-                deleteUser(USER_FILE, targetUser, false);
+                deleteUser(USER_FILE, user.username, false);
             }
             else
             {
