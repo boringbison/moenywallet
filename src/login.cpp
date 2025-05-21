@@ -1,4 +1,5 @@
 #include "login.h"
+#include "user_column_index.h"
 #include "user.h"
 #include <OpenXLSX.hpp>
 #include <iostream>
@@ -25,22 +26,20 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
 
             while (true)
             {
-                auto &userCell = wks.cell("B" + std::to_string(row)).value();
-                auto &passCell = wks.cell("C" + std::to_string(row)).value();
-                auto &roleCell = wks.cell("O" + std::to_string(row)).value();
-                auto &balanceCell = wks.cell("K" + std::to_string(row)).value();
-                auto &idCell = wks.cell("A" + std::to_string(row)).value();
-                auto &isAdminCell = wks.cell("M" + std::to_string(row)).value();
+                auto &userCell = wks.cell(row, COL_USERNAME).value();
+                auto &passCell = wks.cell(row, COL_PASSWORD).value();
+                auto &roleCell = wks.cell(row, COL_ROLE).value();
+                auto &balanceCell = wks.cell(row, COL_BALANCE).value();
+                auto &isAdminCell = wks.cell(row, COL_IS_ADMIN).value();
 
                 // Nếu user hoặc pass trống → reset
                 if (userCell.type() == XLValueType::Empty || passCell.type() == XLValueType::Empty)
                 {
                     std::cerr << "Phát hiện ô dữ liệu trống tại dòng " << row << ". Reset lại vòng lặp từ đầu...\n";
                     doc.close();
-                    break;  // ra khỏi vòng while nội → thực hiện retry ở vòng ngoài
+                    break;
                 }
 
-                       // Log sau chuẩn hóa
                 std::cout << "[DEBUG] userCell: '" << userCell << "'\n";
                 std::cout << "[DEBUG] passCell: '" << passCell << "'\n";
 
@@ -51,11 +50,8 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
                                                 ? passCell.get<std::string>()
                                                 : (passCell.type() == XLValueType::Integer) ? std::to_string(passCell.get<int>()) : "";
 
-                                                                                                
-                // Log sau chuẩn hóa
                 std::cout << "[DEBUG] storedUsername: '" << storedUsername << "'\n";
                 std::cout << "[DEBUG] storedPassword: '" << storedPassword << "'\n";
-
 
                 if (storedUsername.empty() || storedPassword.empty())
                 {
@@ -73,7 +69,7 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
                     user.username = storedUsername;
                     user.password = storedPassword;
                     user.role = storedRole;
-                    user.user_id = (idCell.type() == XLValueType::Integer) ? idCell.get<int>() : 0;
+                    user.user_id = row; // dùng dòng Excel hiện tại làm user_id
 
                     try
                     {
@@ -89,7 +85,7 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
 
                     user.is_admin = (isAdminCell.type() == XLValueType::Integer) ? isAdminCell.get<int>() == 1 : false;
 
-                    std::cout << " >>> Đăng nhập thành công! Role: " << user.role << ", ID: " << user.user_id << "\n";
+                    std::cout << " >>> Đăng nhập thành công! Role: " << user.role << ", Row: " << user.user_id << "\n";
                     doc.close();
                     return user;
                 }
@@ -97,7 +93,6 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
                 row++;
             }
 
-            // Nếu duyệt hết mà không return → thất bại
             retryCount++;
             if (retryCount > maxRetries)
             {
@@ -114,3 +109,4 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
         return std::nullopt;
     }
 }
+
