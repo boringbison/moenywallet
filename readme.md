@@ -44,16 +44,42 @@
 - ✅ Admin: thêm, xóa người dùng, xem toàn bộ danh sách, ví điểm, giao dịch tổng toàn bộ hệ thống
 
 🧩 Cấu trúc thư mục
-
-```
 moenywallet/
-├── include/         # Header files
-├── src/             # Source files (.cpp)
-├── data/            # users.xlsx, logs.xlsx
-├── build/           # Build output
-├── CMakeLists.txt   # File cấu hình CMake
-└── README.md        # Tài liệu mô tả dự án
-```
+├── CMakeLists.txt # File cấu hình CMake để build dự án
+├── README.md # Tài liệu mô tả dự án (đã tạo)
+├── build/ # Thư mục output sau khi build (sinh tự động)
+├── data/ # Dữ liệu chính của hệ thống
+│ ├── logs.xlsx # Lưu lịch sử giao dịch điểm
+│ └── users.xlsx # Lưu danh sách tài khoản người dùng
+├── src/ # Mã nguồn chính
+│ ├── OTPManager.h
+│ ├── add_user.h
+│ ├── admin.h
+│ ├── delete_user.h
+│ ├── get_user_info.h
+│ ├── hash_utils.h
+│ ├── login.h
+│ ├── menu.h
+│ ├── transfer.h
+│ ├── update_user.h
+│ ├── user.h
+│ ├── user_column_index.h
+│ ├── utils.h
+│ ├── validate.h
+│ ├── add_user.cpp
+│ ├── admin.cpp
+│ ├── delete_user.cpp
+│ ├── get_user_info.cpp
+│ ├── hash_utils.cpp
+│ ├── login.cpp
+│ ├── main.cpp
+│ ├── menu.cpp
+│ ├── transfer.cpp
+│ ├── update_user.cpp
+│ ├── user.cpp
+│ ├── utils.cpp
+│ └── validate.cpp
+├── test/ # (Chưa có nội dung - để dành kiểm thử sau)
 
 🧱 Cách build & chạy
 
