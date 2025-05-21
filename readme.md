@@ -29,8 +29,6 @@ Admin: Xóa được tất cả tài khoản trừ tài khoản admin.
 
 Client: Chỉ xóa được tài khoản của chính mình.
 
-OTP, Lưu backup: Chức năng sẽ được phát triển sau.
-
 2. Ví điện tử
    Nạp, chuyển, nhận điểm:
 
