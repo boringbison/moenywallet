@@ -14,23 +14,29 @@ using namespace std;
 const std::string USER_FILE = "../data/users.xlsx";
 const std::string LOG_FILE = "../data/logs.xlsx";
 
-int getIntInput(const std::string& prompt, int min = 0, int max = 10) {
+int getIntInput(const std::string &prompt, int min = 0, int max = 10)
+{
     int value;
-    while (true) {
+    while (true)
+    {
         std::cout << prompt;
         std::cin >> value;
-        if (std::cin.fail() || value < min || value > max) {
+        if (std::cin.fail() || value < min || value > max)
+        {
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "⚠️ Vui lòng nhập số từ " << min << " đến " << max << ".\n";
-        } else {
+            std::cout << "Vui lòng nhập số từ " << min << " đến " << max << ".\n";
+        }
+        else
+        {
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             return value;
         }
     }
 }
 
-void showMainMenu() {
+void showMainMenu()
+{
     cout << "===============================\n";
     cout << " CHAO MUNG DEN HE THONG VI DIEM\n";
     cout << "===============================\n";
@@ -40,9 +46,11 @@ void showMainMenu() {
     cout << "===============================\n";
 }
 
-void userMenu(const User &user) {
+void userMenu(const User &user)
+{
     int choice;
-    do {
+    do
+    {
         cout << "===============================\n";
         cout << " CHAO MUNG DEN HE THONG VI DIEM\n";
         cout << "===============================\n";
@@ -55,31 +63,35 @@ void userMenu(const User &user) {
 
         choice = getIntInput("Nhap lua chon cua ban: ", 0, 4);
 
-        switch (choice) {
+        switch (choice)
+        {
         case 1:
             getUserInfo(USER_FILE, user.username);
             break;
         case 2:
-            updateUserInfo(user.username, "123456");
+            updateUserInfo(user.username, false);
             break;
         case 3:
             transferPoints(USER_FILE, LOG_FILE, user.username);
             break;
         case 4:
+        {
+            string targetUser;
+            cout << "Nhập tài khoản cần xóa: ";
+            cin >> targetUser;
+            char confirm;
+            cout << "Bạn có chắc chắn muốn xóa tài khoản " << targetUser << "? (y/n): ";
+            cin >> confirm;
+            if (confirm == 'y' || confirm == 'Y')
             {
-                string targetUser;
-                cout << "Nhập tài khoản cần xóa: ";
-                cin >> targetUser;
-                char confirm;
-                cout << "Bạn có chắc chắn muốn xóa tài khoản " << targetUser << "? (y/n): ";
-                cin >> confirm;
-                if (confirm == 'y' || confirm == 'Y') {
-                    deleteUser(USER_FILE, targetUser, false);
-                } else {
-                    cout << "Đã hủy xóa tài khoản.\n";
-                }
-                break;
+                deleteUser(USER_FILE, targetUser, false);
             }
+            else
+            {
+                cout << "Đã hủy xóa tài khoản.\n";
+            }
+            break;
+        }
         case 0:
             cout << " Dang xuat khoi tai khoan nguoi dung...\n";
             break;
@@ -91,9 +103,11 @@ void userMenu(const User &user) {
     } while (choice != 0);
 }
 
-void adminMenu(const User &user) {
+void adminMenu(const User &user)
+{
     int choice;
-    do {
+    do
+    {
         cout << "=== MENU QUAN LY (Admin) ===\n";
         cout << "1. Xem danh sách người dùng\n";
         cout << "2. Tạo tài khoản mới\n";
@@ -104,44 +118,45 @@ void adminMenu(const User &user) {
 
         choice = getIntInput("Chọn chức năng: ", 0, 5);
 
-        switch (choice) {
+        switch (choice)
+        {
         case 1:
             viewUserList(USER_FILE);
             break;
         case 2:
-            {
-                string targetRole;
-                cout << "Nhập role cần thêm mới (admin hoặc user): ";
-                cin >> targetRole;
-                addUser(USER_FILE, targetRole);
-                break;
-            }
+        {
+            addUser(USER_FILE);
+            break;
+        }
         case 3:
-            {
-                string targetUser;
-                cout << "Nhập username cần cập nhật: ";
-                cin >> targetUser;
-                updateUserInfo(targetUser, "", true);
-                break;
-            }
+        {
+            string targetUser;
+            cout << "Nhập username cần cập nhật: ";
+            cin >> targetUser;
+            updateUserInfo(targetUser, true);
+            break;
+        }
         case 4:
             transferPoints(USER_FILE, LOG_FILE, user.username);
             break;
         case 5:
+        {
+            string targetUser;
+            cout << "Nhập tài khoản cần xóa: ";
+            cin >> targetUser;
+            char confirm;
+            cout << "Bạn có chắc chắn muốn xóa tài khoản " << targetUser << "? (y/n): ";
+            cin >> confirm;
+            if (confirm == 'y' || confirm == 'Y')
             {
-                string targetUser;
-                cout << "Nhập tài khoản cần xóa: ";
-                cin >> targetUser;
-                char confirm;
-                cout << "Bạn có chắc chắn muốn xóa tài khoản " << targetUser << "? (y/n): ";
-                cin >> confirm;
-                if (confirm == 'y' || confirm == 'Y') {
-                    deleteUser(USER_FILE, targetUser, true);
-                } else {
-                    cout << "Đã hủy xóa tài khoản.\n";
-                }
-                break;
+                deleteUser(USER_FILE, targetUser, true);
             }
+            else
+            {
+                cout << "Đã hủy xóa tài khoản.\n";
+            }
+            break;
+        }
         case 0:
             cout << "Đang đăng xuất...\n";
             break;
@@ -151,7 +166,8 @@ void adminMenu(const User &user) {
     } while (choice != 0);
 }
 
-pair<string, string> getLoginInput() {
+pair<string, string> getLoginInput()
+{
     string username, password;
     cout << "Nhap ten dang nhap: ";
     cin >> username;
@@ -160,36 +176,40 @@ pair<string, string> getLoginInput() {
     return {username, password};
 }
 
-void handleMenu() {
+void handleMenu()
+{
     int choice;
-    do {
+    do
+    {
         showMainMenu();
         choice = getIntInput("Nhap lua chon cua ban: ", 0, 2);
 
-        switch (choice) {
+        switch (choice)
+        {
         case 1:
-            {
-                auto [username, password] = getLoginInput();
-                auto userOpt = loginUser(username, password);
+        {
+            auto [username, password] = getLoginInput();
+            auto userOpt = loginUser(username, password);
 
-                if (userOpt.has_value()) {
-                    User user = userOpt.value();
-                    if (user.role == "admin") {
-                        adminMenu(user);
-                    } else {
-                        userMenu(user);
-                    }
-                }
-                break;
-            }
-        case 2:
+            if (userOpt.has_value())
             {
-                string targetRole;
-                cout << "Nhập role cần thêm mới (admin hoặc user): ";
-                cin >> targetRole;
-                addUser(USER_FILE, targetRole);
-                break;
+                User user = userOpt.value();
+                if (user.role == "admin")
+                {
+                    adminMenu(user);
+                }
+                else
+                {
+                    userMenu(user);
+                }
             }
+            break;
+        }
+        case 2:
+        {
+            addUser(USER_FILE);
+            break;
+        }
         case 0:
             cout << "Tam biet!\n";
             break;
@@ -200,11 +220,13 @@ void handleMenu() {
     } while (choice != 0);
 }
 
-UserUpdateData inputUserData() {
+UserUpdateData inputUserData()
+{
     UserUpdateData userData;
     int choice;
 
-    do {
+    do
+    {
         cout << "\n--- CẬP NHẬT THÔNG TIN ---\n";
         cout << "1. Thay đổi mật khẩu\n";
         cout << "2. Thay đổi tên người dùng\n";
@@ -218,7 +240,8 @@ UserUpdateData inputUserData() {
 
         choice = getIntInput("Chọn mục bạn muốn thay đổi: ", 0, 8);
 
-        switch (choice) {
+        switch (choice)
+        {
         case 1:
             cout << "Nhập mật khẩu mới: ";
             getline(cin, userData.password);
@@ -244,19 +267,23 @@ UserUpdateData inputUserData() {
             getline(cin, userData.birthday);
             break;
         case 7:
+        {
+            cout << "Nhập số điểm cần thêm: ";
+            string tmp;
+            getline(cin, tmp);
+            if (!tmp.empty())
             {
-                cout << "Nhập số điểm cần thêm: ";
-                string tmp;
-                getline(cin, tmp);
-                if (!tmp.empty()) {
-                    try {
-                        userData.balance = stod(tmp);
-                    } catch (...) {
-                        cout << "Giá trị nhập không hợp lệ. Bỏ qua.\n";
-                    }
+                try
+                {
+                    userData.balance = stod(tmp);
                 }
-                break;
+                catch (...)
+                {
+                    cout << "Giá trị nhập không hợp lệ. Bỏ qua.\n";
+                }
             }
+            break;
+        }
         case 8:
             cout << "Hủy bỏ cập nhật thông tin. Quay lại menu.\n";
             return {};
@@ -268,7 +295,8 @@ UserUpdateData inputUserData() {
         }
     } while (choice != 0);
 
-    if (isEmpty(userData)) {
+    if (isEmpty(userData))
+    {
         cout << "Không có thông tin nào được cập nhật.\n";
         return {};
     }

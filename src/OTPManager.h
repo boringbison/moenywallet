@@ -1,10 +1,12 @@
-#ifndef MENU_H
-#define MENU_H
+#ifndef OTPMANAGER_H
+#define OTPMANAGER_H
 
 #include <string>
 #include <ctime>
+#include <iostream>
 
-class OTPManager {
+class OTPManager
+{
 private:
     std::string currentOTP;
     time_t otpGeneratedTime;
@@ -15,7 +17,8 @@ public:
     OTPManager(int length = 6, int expire = 30);
 
     std::string generateOTP();
-    bool checkOTP(const std::string& inputOTP);
+    bool checkOTP(const std::string &inputOTP);
+    void sendOTPToUser(const std::string &username);
 };
 
 #endif

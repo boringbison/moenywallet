@@ -4,11 +4,12 @@
 #include <OpenXLSX.hpp>
 #include <iostream>
 #include <optional>
+#include "hash_utils.h"
 
 using namespace std;
 using namespace OpenXLSX;
 
-std::optional<User> loginUser(const std::string &username, const std::string &password)
+optional<User> loginUser(const string &username, const string &password)
 {
     try
     {
@@ -26,32 +27,46 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
 
             while (true)
             {
-                auto &userCell = wks.cell(row, COL_USERNAME).value();
-                auto &passCell = wks.cell(row, COL_PASSWORD).value();
-                auto &roleCell = wks.cell(row, COL_ROLE).value();
-                auto &balanceCell = wks.cell(row, COL_BALANCE).value();
-                auto &isAdminCell = wks.cell(row, COL_IS_ADMIN).value();
+                auto userCellRaw = wks.cell(row, COL_USERNAME);
 
-                // Nếu user hoặc pass trống → reset
-                if (userCell.type() == XLValueType::Empty || passCell.type() == XLValueType::Empty)
+                if (userCellRaw.value().type() == XLValueType::Empty)
                 {
-                    std::cerr << "Phát hiện ô dữ liệu trống tại dòng " << row << ". Reset lại vòng lặp từ đầu...\n";
-                    doc.close();
-                    break;
+                    break; // hết dòng dữ liệu
                 }
 
-                std::cout << "[DEBUG] userCell: '" << userCell << "'\n";
-                std::cout << "[DEBUG] passCell: '" << passCell << "'\n";
+                auto passCellRaw = wks.cell(row, COL_PASSWORD);
+                auto roleCellRaw = wks.cell(row, COL_ROLE);
+                auto balanceCellRaw = wks.cell(row, COL_BALANCE);
+                auto isAdminCellRaw = wks.cell(row, COL_IS_ADMIN);
+                auto isActiveCellRaw = wks.cell(row, COL_IS_ACTIVE);
 
-                std::string storedUsername = (userCell.type() == XLValueType::String)
-                                                ? userCell.get<std::string>()
-                                                : (userCell.type() == XLValueType::Integer) ? std::to_string(userCell.get<int>()) : "";
-                std::string storedPassword = (passCell.type() == XLValueType::String)
-                                                ? passCell.get<std::string>()
-                                                : (passCell.type() == XLValueType::Integer) ? std::to_string(passCell.get<int>()) : "";
+                if (passCellRaw.value().type() == XLValueType::Empty)
+                {
+                    std::cerr << "Dữ liệu mật khẩu bị rỗng tại dòng " << row << ". Bỏ qua.\n";
+                    row++;
+                    continue;
+                }
 
-                std::cout << "[DEBUG] storedUsername: '" << storedUsername << "'\n";
-                std::cout << "[DEBUG] storedPassword: '" << storedPassword << "'\n";
+                auto &userCell = userCellRaw.value();
+                auto &passCell = passCellRaw.value();
+                auto &roleCell = roleCellRaw.value();
+                auto &balanceCell = balanceCellRaw.value();
+                auto &isAdminCell = isAdminCellRaw.value();
+
+                // std::cout << "[DEBUG] userCell: '" << userCell << "'\n";
+                // std::cout << "[DEBUG] passCell: '" << passCell << "'\n";
+
+                string storedUsername = (userCell.type() == XLValueType::String)
+                                            ? userCell.get<std::string>()
+                                        : (userCell.type() == XLValueType::Integer) ? std::to_string(userCell.get<int>())
+                                                                                    : "";
+                string storedPassword = (passCell.type() == XLValueType::String)
+                                            ? passCell.get<std::string>()
+                                        : (passCell.type() == XLValueType::Integer) ? std::to_string(passCell.get<int>())
+                                                                                    : "";
+
+                // std::cout << "[DEBUG] storedUsername: '" << storedUsername << "'\n";
+                // std::cout << "[DEBUG] storedPassword: '" << hashPassword(password) << "'\n";
 
                 if (storedUsername.empty() || storedPassword.empty())
                 {
@@ -59,12 +74,30 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
                     continue;
                 }
 
-                std::string storedRole = (roleCell.type() == XLValueType::String) ? roleCell.get<std::string>() : "user";
-                std::transform(storedRole.begin(), storedRole.end(), storedRole.begin(), ::tolower);
+                string storedRole = (roleCell.type() == XLValueType::String) ? roleCell.get<string>() : "user";
+                transform(storedRole.begin(), storedRole.end(), storedRole.begin(), ::tolower);
                 storedRole.erase(remove_if(storedRole.begin(), storedRole.end(), ::isspace), storedRole.end());
 
-                if (storedUsername == username && storedPassword == password)
+                // So sánh tên đăng nhập và mật khẩu (đã hash)
+                if (storedUsername == username && storedPassword == hashPassword(password))
                 {
+                    // Kiểm tra is_active
+                    bool isActive = true;
+                    if (isActiveCellRaw.value().type() == XLValueType::Integer)
+                        isActive = isActiveCellRaw.value().get<int>() == 1;
+                    else if (isActiveCellRaw.value().type() == XLValueType::Boolean)
+                        isActive = isActiveCellRaw.value().get<bool>();
+                    else
+                        isActive = false;
+
+                    if (!isActive)
+                    {
+                        cerr << "Tài khoản này đã bị vô hiệu hóa. Không thể đăng nhập.\n";
+                        doc.close();
+                        return nullopt;
+                    }
+
+                    // Nếu hợp lệ và còn hoạt động, tạo user object
                     User user;
                     user.username = storedUsername;
                     user.password = storedPassword;
@@ -76,7 +109,7 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
                         if (balanceCell.type() == XLValueType::Float)
                             user.balance = static_cast<int>(balanceCell.get<double>());
                         else
-                            user.balance = stoi(balanceCell.get<std::string>());
+                            user.balance = stoi(balanceCell.get<string>());
                     }
                     catch (...)
                     {
@@ -85,7 +118,7 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
 
                     user.is_admin = (isAdminCell.type() == XLValueType::Integer) ? isAdminCell.get<int>() == 1 : false;
 
-                    std::cout << " >>> Đăng nhập thành công! Role: " << user.role << ", Row: " << user.user_id << "\n";
+                    cout << " >>> Đăng nhập thành công!" << "\n";
                     doc.close();
                     return user;
                 }
@@ -96,11 +129,11 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
             retryCount++;
             if (retryCount > maxRetries)
             {
-                std::cerr << "Quá số lần đăng nhập tối đa. Thoát.\n";
-                return std::nullopt;
+                cerr << "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại.\n";
+                return nullopt;
             }
 
-            std::cout << "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại. (" << retryCount << "/" << maxRetries << ")\n";
+            // std::cout << "Tên đăng nhập hoặc mật khẩu không đúng. Vui lòng thử lại. (" << retryCount << "/" << maxRetries << ")\n";
         }
     }
     catch (const std::exception &e)
@@ -109,4 +142,3 @@ std::optional<User> loginUser(const std::string &username, const std::string &pa
         return std::nullopt;
     }
 }
-

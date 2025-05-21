@@ -4,5 +4,5 @@
 #include <string>
 
 // adminMode = true thì không cần nhập OTP
-void updateUserInfo(const std::string &username, const std::string &expectedOtp = "", bool adminMode = false);
+void updateUserInfo(const std::string &username, bool adminMode = false);
 #endif

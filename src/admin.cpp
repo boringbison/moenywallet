@@ -13,7 +13,7 @@ void viewUserList(const string &filename)
         doc.open(filename);
         auto wks = doc.workbook().worksheet("Sheet1");
 
-        cout << "========== DANH SÁCH NGƯỜI DÙNG (ROLE: user) ==========\n";
+        cout << "========== DANH SÁCH NGƯỜI DÙNG (ROLE: USER) ==========\n";
 
         int row = 2;
         while (true)
@@ -32,6 +32,10 @@ void viewUserList(const string &filename)
             if (wks.cell("G" + to_string(row)).value().type() == XLValueType::String)
                 email = wks.cell("G" + to_string(row)).value().get<string>();
 
+            string phoneNumber = "";
+            if (wks.cell("E" + to_string(row)).value().type() == XLValueType::String)
+                phoneNumber = wks.cell("E" + to_string(row)).value().get<string>();
+
             string role = "";
             if (wks.cell("O" + to_string(row)).value().type() == XLValueType::String)
                 role = wks.cell("O" + to_string(row)).value().get<string>();
@@ -45,10 +49,11 @@ void viewUserList(const string &filename)
 
             if (role == "user")
             {
-                cout << "Tài khoản: " << username << "\n";
-                cout << "Họ tên:    " << fullName << "\n";
-                cout << "Email:     " << email << "\n";
-                cout << "Số dư:     " << balance << " điểm\n";
+                cout << "Tài khoản:     " << username << "\n";
+                cout << "Họ tên:        " << fullName << "\n";
+                cout << "Email:         " << email << "\n";
+                cout << "Số điện thoại: " << phoneNumber << "\n";
+                cout << "Số dư:         " << balance << " điểm\n";
                 cout << "-----------------------------------------\n";
             }
 

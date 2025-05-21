@@ -4,11 +4,13 @@
 #include <OpenXLSX.hpp>
 #include "validate.h"
 #include "utils.h"
+#include "hash_utils.h"
+#include "OTPManager.h"
 
 using namespace std;
 using namespace OpenXLSX;
 
-bool doesUserExist(const std::string &username)
+bool doesUserExist(const string &username)
 {
     XLDocument doc;
     doc.open("../data/users.xlsx");
@@ -27,14 +29,13 @@ bool doesUserExist(const std::string &username)
     return false;
 }
 
-void updateUserInfo(const std::string &username, const std::string &expectedOtp, bool adminMode)
+void updateUserInfo(const string &username, bool adminMode)
 {
     if (!doesUserExist(username))
     {
         cout << "Không tìm thấy người dùng " << username << ". Hủy cập nhật.\n";
         return;
     }
-    string otpInput;
     cout << "=== Cập nhật thông tin người dùng ===\n";
 
     UserUpdateData data = inputUserData();
@@ -46,11 +47,17 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
 
     if (!adminMode)
     {
-        cout << "Yêu cầu nhập mã OTP để xác nhận thay đổi: ";
-        getline(cin, otpInput);
-        if (otpInput != expectedOtp)
+        OTPManager otp(6, 120);      // khởi tạo otp
+        otp.generateOTP();           // sinh otp
+        otp.sendOTPToUser(username); // gửi người dùng
+
+        string otpInput;
+        cout << "Nhập mã OTP để xác nhận: ";
+        getline(cin >> ws, otpInput);
+
+        if (!otp.checkOTP(otpInput))
         {
-            cout << "OTP không hợp lệ. Hủy cập nhật.\n";
+            cout << "OTP không hợp lệ hoặc đã hết hạn. Hủy thao tác.\n";
             return;
         }
     }
@@ -80,7 +87,8 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                         cout << "Mật khẩu không hợp lệ( mật khẩu phải từ 6 ký tự). Hủy cập nhật.\n";
                         return;
                     }
-                    wks.cell("C" + to_string(row)).value() = XLCellValue(data.password); // hoặc ép rõ string
+                    string hashedPassword = hashPassword(data.password);
+                    wks.cell("C" + to_string(row)).value() = hashedPassword;
                 }
 
                 if (!data.fullName.empty())
@@ -126,7 +134,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                     wks.cell("H" + to_string(row)).value() = data.birthday;
                 }
 
-                // ✅ Cộng thêm balance nếu có
+                // Cộng thêm balance nếu có
                 if (data.balance.has_value())
                 {
                     auto balanceCell = wks.cell("K" + to_string(row));
@@ -142,7 +150,7 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
                         {
                             try
                             {
-                                currentBalance = stod(balanceCell.value().get<std::string>());
+                                currentBalance = stod(balanceCell.value().get<string>());
                             }
                             catch (...)
                             {
@@ -158,8 +166,9 @@ void updateUserInfo(const std::string &username, const std::string &expectedOtp,
 
                 cout << "Cập nhật thông tin thành công!\n";
                 // Cập nhật cột Update_At (J)
-                wks.cell("J" + to_string(row)).value() = getCurrentDateTime();
-                cout << "Cập nhật thời gian Update_At: " << getCurrentDateTime() << endl;
+                string now = getCurrentDateTime();
+                wks.cell("J" + to_string(row)).value() = now;
+                cout << "Cập nhật thời gian Update_At: " << now << endl;
 
                 break;
             }
