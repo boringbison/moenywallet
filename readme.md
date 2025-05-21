@@ -6,12 +6,12 @@
 
 ## 👨‍💻 Thành viên thực hiện
 
-| Họ tên          | MSSV    | Vai trò/Phân công                                                                            |
-| --------------- | ------- | -------------------------------------------------------------------------------------------- |
-| Nguyễn Huy Hoàn | K24DTCN | Trưởng nhóm / phân tích, thiết kế hệ thống, cập nhật OTP, fix bug                            |
-| Lê Thanh Nguyên | K24DTCN | Thành viên / đăng nhập, đăng xuất, cập nhật thông tin cá nhân, phân luồng admin user, fixbug |
-| Trần Anh Đức    | K24DTCN | Thành viên / đăng ký, xóa tài khoản                                                          |
-| Hà Ngọc Quang   | K24DTCN | qThành viên / quản lý ví, giao dịch điểm, ghi nhận log giao dịch                             |
+| Họ tên          | MSSV       | Vai trò/Phân công                                                                            |
+| --------------- | ---------- | -------------------------------------------------------------------------------------------- |
+| Nguyễn Huy Hoàn | K24DTCN369 | Trưởng nhóm / phân tích, thiết kế hệ thống, cập nhật OTP, fix bug                            |
+| Lê Thanh Nguyên | K24DTCN379 | Thành viên / đăng nhập, đăng xuất, cập nhật thông tin cá nhân, phân luồng admin user, fixbug |
+| Trần Anh Đức    | K24DTCN366 | Thành viên / đăng ký, xóa tài khoản                                                          |
+| Hà Ngọc Quang   | K24DTCN382 | Thành viên / quản lý ví, giao dịch điểm, ghi nhận log giao dịch                              |
 
 > 💡 Dự án được thực hiện cá nhân. Mọi commit thể hiện rõ tiến độ từng phần trên GitHub.
 
@@ -122,7 +122,7 @@ moenywallet/
 
 ```bash
 cmake -S . -B build
-cmake --build build
+cmake --build .
 ./build/moenywallet
 ```
 
